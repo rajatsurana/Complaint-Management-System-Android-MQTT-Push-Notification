@@ -1,5 +1,7 @@
 package com.rajat.compmsys;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,11 +9,14 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends AppCompatActivity {
-
+    public static final String MyPREFERENCES = "MyPrefs" ;
+    public static SharedPreferences sharedpreferences;
+    public static SharedPreferences.Editor editor ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
     }
 
     @Override
