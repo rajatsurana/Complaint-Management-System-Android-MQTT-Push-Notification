@@ -197,9 +197,7 @@ public class CallVolley {
                                 Log.i("rajat", "onErrorResponse" + error.toString());
                                 //pDialog.dismiss();
                                 Tools.showAlertDialog(error.toString(), context);
-
                         }
-
                 }
                 ){
 
