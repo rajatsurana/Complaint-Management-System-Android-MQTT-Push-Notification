@@ -3,7 +3,16 @@ package com.rajat.compmsys.Volley;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -11,11 +20,17 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import com.rajat.compmsys.MainActivity;
 import com.rajat.compmsys.Tools.Tools;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +42,9 @@ public class CallVolley {
                 Log.i("rajat", "setCustomRetryPolicy");
                 jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         }
+
         // method that will send request  to server and get a response back
-        public static void makeLoginCall(String url, final Context context)
+        public static void makeLoginCall(String url, final Context context,final String email,final String password)
         {
               //  pDialog=  Tools.showProgressBar(context);
 
@@ -71,8 +87,8 @@ public class CallVolley {
                                 @Override
                                 protected Map<String, String> getParams() throws AuthFailureError {
                                         Map<String, String> params = new HashMap<>();
-                                        params.put("email","");
-                                        params.put("password","");
+                                        params.put("email",email);
+                                        params.put("password",password);
                                         /*
                                         JSONArray productIdsArr=new JSONArray();
                                         JSONArray quantitiesArr= new JSONArray();
@@ -111,7 +127,7 @@ public class CallVolley {
                                         Log.i("rajat", " onResponseActive " + response);
                                         //LoginApiJsonParser(response, context);
                                         MainActivity.editor = MainActivity.sharedpreferences.edit();
-                                        MainActivity.editor.putString("TOKEN", "");
+                                        MainActivity.editor.putString("token", "");
                                         MainActivity.editor.apply();
 
                                        // pDialog.dismiss();
@@ -144,9 +160,9 @@ public class CallVolley {
                 VolleySingleton.getInstance(context).addToRequestQueue(request);
         }
 
-        public static void afterLoginCall(String url, final Context context, final int API_NUMBER){
+        public static void uploadImageCall(String url, final Context context,final Bitmap bitmap,final String userId,final String complaintId){
                 //pDialog=  Tools.showProgressBar(context);
-
+                final Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
                 {
                         // if a reponse is recieved after sending request
@@ -155,12 +171,11 @@ public class CallVolley {
                         {
                                 try
                                 {
-                                        switch (API_NUMBER){
-                                                case 1:
-                                                        //JSONParser.NotificationApiJsonParser(response, context);
-                                                        break;
-
+                                        JSONObject resultJson = new JSONObject(response);
+                                        if(resultJson.has("response")){
+                                                Toast.makeText(context,""+resultJson.getString("response"),Toast.LENGTH_LONG).show();
                                         }
+
                                         Log.i("rajat", " onResponseActive " + response);
 
                                         //pDialog.dismiss();
@@ -192,7 +207,8 @@ public class CallVolley {
                         public Map<String, String> getHeaders() throws AuthFailureError {
                                 //Log.i("size in getHeader: ",myHeaders.size()+"");
                                 Map<String, String> mHeaders=new HashMap<String,String>();//myHeaders;
-                                mHeaders.put("x-access-token", MainActivity.sharedpreferences.getString("token", ""));//MainActivity.sharedpreferences.getString("Set-Cookie",""));
+                                mHeaders.put("x-access-token", MainActivity.sharedpreferences.getString("token", ""));
+                                //context.getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE).getString("token","")
                                 return mHeaders;
                         }
                         @Override
@@ -202,8 +218,11 @@ public class CallVolley {
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
-                                //params.put("id",productId);
-                                //params.put("discount",discount+"");
+                                //Bitmap b=null;
+                                String imgStr= getStringImage(bitmap2);
+                                params.put("imageFile",imgStr);
+                                params.put("userId",userId);
+                                params.put("complaintId",complaintId);
                                 return params;
                         }
 
@@ -215,4 +234,82 @@ public class CallVolley {
                 VolleySingleton.getInstance(context).addToRequestQueue(request);
         }
 
+
+        public  static void getBitmapFromUrl(String url,final Context con,final ImageView iv){
+
+
+                ImageRequest request = new ImageRequest(url,
+                        new Response.Listener<Bitmap>() {
+
+                                @Override
+                                public void onResponse(Bitmap bitmap) {
+                                        //mImageView.setImageBitmap(bitmap);
+                                        //iv.setImageBitmap(bitmap);
+                                        //byte[] img;
+
+                                        if(bitmap!=null){
+                                                Bitmap bit2 = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+                                                //ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                                                //bit2.compress(Bitmap.CompressFormat.PNG, 100, bos);
+                                                //img = bos.toByteArray();
+                                                iv.setImageBitmap(bit2);
+
+                                        }else{
+                                                Toast.makeText(con,"Image not found",Toast.LENGTH_SHORT).show();
+                                        }
+
+                                }
+                        }, 0, 0, null,
+                        new Response.ErrorListener() {
+                                public void onErrorResponse(VolleyError error) {
+                                        //Toast.makeText(con,"",Toast.LENGTH_SHORT).show();
+
+                                        //Log.i("rajat", error.getLocalizedMessage());
+                                        //mImageView.setImageResource(R.drawable.image_load_error);
+                                }
+                        }){
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                                Map<String, String> mHeaders=new HashMap<String,String>();//myHeaders;
+                                mHeaders.put("x-access-token", MainActivity.sharedpreferences.getString("token", ""));
+                                return mHeaders;
+                        }
+                };
+                // Access the RequestQueue through your singleton class.
+                VolleySingleton.getInstance(con).addToRequestQueue(request);
+
+
+        }
+        private static void SaveImage(Bitmap finalBitmap,String filename) {
+
+                String root = Environment.getExternalStorageDirectory().toString();
+                File myDir = new File(root + "/compMSys");
+                myDir.mkdirs();
+                //Credentials cred = new Credentials();
+                //cred= databaseHelper.getCredentials();
+                //Random generator = new Random();
+                //int n = 10000;
+                // n = generator.nextInt(n);
+                String fname = filename;//cred.getParentID()+cred.getEmpID()+".png";
+                File file = new File (myDir, fname);
+                if (file.exists ()) {file.delete ();}
+                try {
+                        FileOutputStream out = new FileOutputStream(file);
+                        finalBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+                        out.flush();
+                        out.close();
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i("rajat", e.getLocalizedMessage());
+                }
+        }
+
+        private static String getStringImage(Bitmap bmp){
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] imageBytes = baos.toByteArray();
+                String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+                return encodedImage;
+        }
 }

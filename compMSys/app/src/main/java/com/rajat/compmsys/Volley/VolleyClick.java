@@ -10,9 +10,9 @@ import com.rajat.compmsys.Tools.Tools;
  * Created by Lenovo on 2/21/2016.
  */
 public class VolleyClick {
-    //public static CourseThreadObject object;
+
     public static String cou_code;
-    public static String course_desc;
+
     static int Notification=1,
             CourseAssignment=2,
             CourseList=3,
@@ -30,7 +30,7 @@ public class VolleyClick {
         String URL = "http://192.168.43.200/threads/post_comment.json?thread_id="+thread_id+"&description="+description+"";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, postNewComment);
+            //CallVolley.afterLoginCall(URL, context, postNewComment);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -40,7 +40,7 @@ public class VolleyClick {
         String URL = "http://192.168.43.200/threads/new.json?title="+title+"&description="+description+"&course_code="+course_code+"";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, createNewThread);
+            //CallVolley.afterLoginCall(URL, context, createNewThread);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -51,7 +51,7 @@ public class VolleyClick {
         String URL = "http://192.168.43.200/default/grades.json";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, ViewGrades);
+            //CallVolley.afterLoginCall(URL, context, ViewGrades);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -61,7 +61,7 @@ public class VolleyClick {
         String URL = "http://192.168.43.200/courses/list.json";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, CourseList);
+            //CallVolley.afterLoginCall(URL, context, CourseList);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -76,13 +76,13 @@ public class VolleyClick {
             Tools.showAlertDialog("Internet Available", context);
         }
     }
-    public static void onLoginClick(String username,String password,Context context){
+    public static void onLoginClick(String email,String password,Context context){
         //String entryNumber1 = "cs5110281", studentName1="jasmeet";
         CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/default/login.json?userid="+username+"&password="+password;
+        String URL = "http://192.168.43.200:3000/login";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.makeLoginCall(URL, context);
+            CallVolley.makeLoginCall(URL, context,email,password);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -93,63 +93,11 @@ public class VolleyClick {
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
 
-            CallVolley.afterLoginCall(URL, context, Notification);
+            //CallVolley.afterLoginCall(URL, context, Notification);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
     }
-    public static void onNotifyService(Context context){
-        CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/default/notifications.json";
-        if (!chkNet.checkNetwork()) {
-            VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
 
-            CallVolley.afterLoginCall(URL, context, NotificationService);
-        } else {
-            Tools.showAlertDialog("Internet Available", context);
-        }
-    }
-    //
-    //viewCourseThreadsCall
-    public static void viewCourseThreads(String courseCode,Context context){
-        CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/courses/course.json/"+courseCode+"/threads";
-        if (!chkNet.checkNetwork()) {
-            cou_code= courseCode;
-            VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, viewCourseThreads);
-        } else {
-            Tools.showAlertDialog("Internet Available", context);
-        }
-    }
-    public static void viewCourseGrades(String courseCode,Context context){
-        CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/courses/course.json/"+courseCode+"/grades";
-        if (!chkNet.checkNetwork()) {
-            VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, viewCourseGrades);
-        } else {
-            Tools.showAlertDialog("Internet Available", context);
-        }
-    }
-    public static void listAllCourseAssignment(String courseCode,Context context){
-        CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/courses/course.json/"+courseCode+"/assignments";
-        if (!chkNet.checkNetwork()) {
-            VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, listAllCourseAssignment);
-        } else {
-            Tools.showAlertDialog("Internet Available", context);
-        }
-    }
-    public static void getCourseAssignmentDetails(int number,Context context){
-        CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.200/courses/assignment.json/"+number;
-        if (!chkNet.checkNetwork()) {
-            VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.afterLoginCall(URL, context, CourseAssignment);
-        } else {
-            Tools.showAlertDialog("Internet Available", context);
-        }
-    }
+
 }

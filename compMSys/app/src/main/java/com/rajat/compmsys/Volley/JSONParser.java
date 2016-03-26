@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 
 import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.Objects.UserObject;
 import com.rajat.compmsys.Tools.Tools;
 
 import org.json.JSONArray;
@@ -25,12 +26,17 @@ import java.util.Arrays;
 public class JSONParser {
     public static void LoginApiJsonParser(String JsonStringResult, Context con) {
         try {
-            //boolean status;
             String email = "";
-            String userId = "";
-            String error = "";
+            String user_id = "";
+            String whoCreated="";
+            String category="";
+            String hostel="";
+            String message="";
+            String password="";
             String token = "";
-            String type = "";
+            String error="";
+            UserObject user ;
+            JSONObject userObj;
             //create json object from response string
             JSONObject resultJson = new JSONObject(JsonStringResult);
             if (resultJson.has("token")) {
@@ -38,16 +44,25 @@ public class JSONParser {
                 MainActivity.editor = MainActivity.sharedpreferences.edit();
                 MainActivity.editor.putString("token", token);
                 MainActivity.editor.apply();
+                if(resultJson.has("user")){
+                    userObj=resultJson.getJSONObject("user");
+                    if (userObj.has("email")) {email = userObj.getString("email");}
+                    if (userObj.has("_id")) {user_id = userObj.getString("_id");}
+                    if (userObj.has("whoCreated")) {whoCreated = userObj.getString("whoCreated");}
+                    if (userObj.has("hostel")) {hostel = userObj.getString("hostel");}
+                    if (userObj.has("password")) {password = userObj.getString("password");}
+                    if (userObj.has("message")) {message = userObj.getString("message");}
+                    if (userObj.has("category")) {category = userObj.getString("category");}
+                }
 
-                if (resultJson.has("email")) {email = resultJson.getString("email");}
-                if (resultJson.has("userId")) {userId = resultJson.getString("userId");}
-                if (resultJson.has("type")) {type = resultJson.getString("type");}
+
+                user=new UserObject(email,user_id,whoCreated,category,hostel,password);
 
             } else if (resultJson.has("error")) {
                 error = resultJson.getString("error");
             }
-            Log.i("rajat", email + " " + userId + " " + token + " " + type + " " + error);
-            Tools.showAlertDialog(email + " " + userId + " " + token + " " + type + " " + error, con);
+            Log.i("rajat", email + " " + user_id + " " + token + " " + category + " " + message+" "+error);
+            Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message+" "+error, con);
         } catch (Exception e) {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
