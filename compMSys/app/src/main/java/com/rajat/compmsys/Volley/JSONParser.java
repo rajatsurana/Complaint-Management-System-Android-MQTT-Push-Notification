@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 
 import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.Objects.ComplaintObject;
 import com.rajat.compmsys.Objects.UserObject;
+import com.rajat.compmsys.Objects.VoteObject;
 import com.rajat.compmsys.Tools.Tools;
 
 import org.json.JSONArray;
@@ -44,6 +46,7 @@ public class JSONParser {
                 MainActivity.editor = MainActivity.sharedpreferences.edit();
                 MainActivity.editor.putString("token", token);
                 MainActivity.editor.apply();
+                if (resultJson.has("message")) {message = resultJson.getString("message");}
                 if(resultJson.has("user")){
                     userObj=resultJson.getJSONObject("user");
                     if (userObj.has("email")) {email = userObj.getString("email");}
@@ -51,7 +54,7 @@ public class JSONParser {
                     if (userObj.has("whoCreated")) {whoCreated = userObj.getString("whoCreated");}
                     if (userObj.has("hostel")) {hostel = userObj.getString("hostel");}
                     if (userObj.has("password")) {password = userObj.getString("password");}
-                    if (userObj.has("message")) {message = userObj.getString("message");}
+
                     if (userObj.has("category")) {category = userObj.getString("category");}
                 }
 
@@ -68,82 +71,523 @@ public class JSONParser {
         }
     }
 
-    //
-    /*
-        public static void FindProductsApiJsonParser(String JsonStringResult, Context con) {
+    public static void CreateUserApiJsonParser(String JsonStringResult, Context con) {
         try {
-            JSONArray products;
-            JSONObject product;
-            String created_at = "";
-            String updated_at = "";
-            String userId = "";
-            int discount = 0;
-            String description = "";
-            int quantity = 0;
-            int price = 0;
-            String productId = "";
-            String message = "";
-            //create json object from response string
-            ArrayList<ProductObject> productObjList = new ArrayList<ProductObject>();
-            JSONObject resultJson = new JSONObject(JsonStringResult);
-            if (resultJson.has("products")) {
-                products = resultJson.getJSONArray("products");
-                for (int i = 0; i < products.length(); i++) {
-                    product = products.getJSONObject(i);
-                    discount = product.getInt("discount");
-                    quantity = product.getInt("quantity");
-                    if(product.has("price")){
-                    price = product.getInt("price");}
-                    userId = product.getString("userId");
-                    description = product.getString("description");
-                    productId = product.getString("_id");
-                    created_at = product.getString("created_at");
-                    updated_at = product.getString("updated_at");
-                    productObjList.add(new ProductObject(created_at, updated_at, userId, discount, description, quantity, price, productId));
-                }
-                // message=resultJson.getString("message");
-            }
-            Log.i("rajat", discount + " " + quantity + " " + price + " " + userId + " " + description + " " + productId + " size: " + productObjList.size() + " " + message);
-            Tools.showAlertDialog(discount + " " + quantity + " " + price + " " + userId + " " + description + " " + productId + " " + message, con);
-        } catch (Exception e) {
-            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
-        }
-    }
-
-    public static void CreateProductApiJsonParser(String JsonStringResult, Context con) {
-        try {
-
-            JSONObject product;
-
-            String created_at = "";
-            String updated_at = "";
-            String userId = "";
-            int discount = 0;
-            String description = "";
-            int quantity = 0;
-            int price = 0;
-            String productId = "";
-            String message = "";
+            String email = "";
+            String user_id = "";
+            String whoCreated="";
+            String category="";
+            String hostel="";
+            String message="";
+            String password="";
+            //String token = "";
+            //String error="";
+            UserObject user ;
+            JSONObject userObj;
             //create json object from response string
             JSONObject resultJson = new JSONObject(JsonStringResult);
-            if (resultJson.has("newProduct")) {
-                product = resultJson.getJSONObject("newProduct");
-                discount = product.getInt("discount");
-                quantity = product.getInt("quantity");
-                price = product.getInt("price");
-                userId = product.getString("userId");
-                description = product.getString("description");
-                productId = product.getString("_id");
-                created_at = product.getString("created_at");
-                updated_at = product.getString("updated_at");
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
                 message = resultJson.getString("message");
+                if(message.equals("user_created")){
+                    if(resultJson.has("user")){
+                        userObj=resultJson.getJSONObject("user");
+                        if (userObj.has("email")) {email = userObj.getString("email");}
+                        if (userObj.has("_id")) {user_id = userObj.getString("_id");}
+                        if (userObj.has("whoCreated")) {whoCreated = userObj.getString("whoCreated");}
+                        if (userObj.has("hostel")) {hostel = userObj.getString("hostel");}
+                        if (userObj.has("password")) {password = userObj.getString("password");}
+                        //if (resultJson.has("message")) {}
+                        if (userObj.has("category")) {category = userObj.getString("category");}
+
+                        user=new UserObject(email,user_id,whoCreated,category,hostel,password);
+                    }
+                }else if (message.equals("user_already_exists")){
+                    Log.i("rajat", "User already exists");
+                }
             }
-            Log.i("rajat", discount + " " + quantity + " " + price + " " + userId + " " + description + " " + productId + " " + message);
-            Tools.showAlertDialog(discount + " " + quantity + " " + price + " " + userId + " " + description + " " + productId + " " + message, con);
+
+            Log.i("rajat", email + " " + user_id + " "  + " " + category + " " + message);
+            Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message, con);
         } catch (Exception e) {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
     }
-     */
-    //
+
+    public static void FindMyCreatedUsersApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String email = "";
+            String user_id = "";
+            String whoCreated="";
+            String category="";
+            String hostel="";
+            String message="";
+            String password="";
+            //String token = "";
+            //String error="";
+            ArrayList<UserObject> userObjList = new ArrayList<UserObject>();
+            UserObject user ;
+            JSONObject userObj;
+            JSONArray userObjectArr;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("users_found")){
+                    if(resultJson.has("users")){
+                        userObjectArr = resultJson.getJSONArray("users");
+                        for (int i = 0; i < userObjectArr.length(); i++) {
+                            userObj=userObjectArr.getJSONObject(i);
+                            if (userObj.has("email")) {email = userObj.getString("email");}
+                            if (userObj.has("_id")) {user_id = userObj.getString("_id");}
+                            if (userObj.has("whoCreated")) {whoCreated = userObj.getString("whoCreated");}
+                            if (userObj.has("hostel")) {hostel = userObj.getString("hostel");}
+                            if (userObj.has("password")) {password = userObj.getString("password");}
+                            //if (resultJson.has("message")) {}
+                            if (userObj.has("category")) {category = userObj.getString("category");}
+
+                            user=new UserObject(email,user_id,whoCreated,category,hostel,password);
+                            userObjList.add(user);
+                        }
+                    }
+                }else if (message.equals("no_users_found")){
+                    Log.i("rajat", "no_users_found");
+                }
+            }
+
+            Log.i("rajat", email + " " + user_id + " "  + " " + category + " " + message);
+            Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message +userObjList.size()+" :size", con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void ChangePasswordApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String email = "";
+            String user_id = "";
+            String whoCreated="";
+            String category="";
+            String hostel="";
+            String message="";
+            String password="";
+            //String token = "";
+            //String error="";
+            UserObject user ;
+            JSONObject userObj;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("password_changed")){
+                    if(resultJson.has("user")){
+                        userObj=resultJson.getJSONObject("user");
+                        if (userObj.has("email")) {email = userObj.getString("email");}
+                        if (userObj.has("_id")) {user_id = userObj.getString("_id");}
+                        if (userObj.has("whoCreated")) {whoCreated = userObj.getString("whoCreated");}
+                        if (userObj.has("hostel")) {hostel = userObj.getString("hostel");}
+                        if (userObj.has("password")) {password = userObj.getString("password");}
+                        //if (resultJson.has("message")) {}
+                        if (userObj.has("category")) {category = userObj.getString("category");}
+
+                        user=new UserObject(email,user_id,whoCreated,category,hostel,password);
+                    }
+                }else if (message.equals("username_or_password_incorrect")){
+                    Log.i("rajat", "username_or_password_incorrect");
+                }
+            }
+
+            Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void NewComplaintApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+            int down=0;
+            int up=0;
+            boolean canVote=true;
+            String complaintId="";
+            String vote_id="";
+            JSONObject complaintObj;
+            JSONObject voteObj;
+            ComplaintObject complaintObject;
+            VoteObject voteObject;
+
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaint_created")){
+                    if(resultJson.has("complaint")){
+                        complaintObj=resultJson.getJSONObject("complaint");
+                        if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                        if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
+                        if (complaintObj.has("place")) {place = complaintObj.getString("place");}
+                        if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                        if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                        //if (resultJson.has("message")) {}
+                        if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+
+                        complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+                    }
+                    if(resultJson.has("vote")){
+                        voteObj=resultJson.getJSONObject("vote");
+                        if (voteObj.has("up")) {up = voteObj.getInt("up");}
+                        if (voteObj.has("down")) {down = voteObj.getInt("down");}
+                        if (voteObj.has("_id")) {vote_id = voteObj.getString("_id");}
+                        if (voteObj.has("canVote")) {canVote = voteObj.getBoolean("canVote");}
+                        if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
+
+                        voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
+                    }
+                }
+            }else{
+                Log.i("rajat", "complaint not filed");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void MyComplaintsApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+
+            JSONObject complaintObj;
+
+            ComplaintObject complaintObject;
+
+            ArrayList<ComplaintObject> complaintObjList = new ArrayList<ComplaintObject>();
+            JSONArray complaints;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaints_found")){
+                    if(resultJson.has("complaints")){
+                        complaints = resultJson.getJSONArray("complaints");
+                        for (int i = 0; i < complaints.length(); i++) {
+                            complaintObj = complaints.getJSONObject(i);
+                            if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                            if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
+                            if (complaintObj.has("place")) {place = complaintObj.getString("place");}
+                            if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                            if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            //if (resultJson.has("message")) {}
+                            if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+                            complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+                            complaintObjList.add(complaintObject);
+                        }
+                        //complaintObj=resultJson.getJSONObject("complaint");
+                        Log.i("rajat","size:- "+complaintObjList.size());
+                    }
+
+                }else if(message.equals("no_complaints_found")){
+
+                }
+            } else {
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void SearchComplaintsApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+
+            JSONObject complaintObj;
+
+            ComplaintObject complaintObject;
+
+            ArrayList<ComplaintObject> complaintObjList = new ArrayList<ComplaintObject>();
+            JSONArray complaints;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaints_found")){
+                    if(resultJson.has("complaints")){
+                        complaints = resultJson.getJSONArray("complaints");
+                        for (int i = 0; i < complaints.length(); i++) {
+                            complaintObj = complaints.getJSONObject(i);
+                            if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                            if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
+                            if (complaintObj.has("place")) {place = complaintObj.getString("place");}
+                            if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                            if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            //if (resultJson.has("message")) {}
+                            if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+                            complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+                            complaintObjList.add(complaintObject);
+                        }
+                        //complaintObj=resultJson.getJSONObject("complaint");
+                        Log.i("rajat","size:- "+complaintObjList.size());
+                    }
+
+                }else if(message.equals("no_complaints_found")){
+
+                }
+            } else {
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void ComplaintDescriptionApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+            JSONObject complaintObj;
+            ComplaintObject complaintObject;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaint_found")){
+                    if(resultJson.has("complaint")){
+                        complaintObj=resultJson.getJSONObject("complaint");
+                        if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                        if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");
+                        }
+                        if (complaintObj.has("place")) {place = complaintObj.getString("place");
+                        }
+                        if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                        if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");
+                        }
+                        //if (resultJson.has("message")) {}
+                        if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+                        complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+                    }
+                }else if(message.equals("no_complaint_found")){
+                    Log.i("rajat", "no_complaint_found");
+                }
+            }else{
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void ChangeComplaintStatusApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+            JSONObject complaintObj;
+            ComplaintObject complaintObject;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaint_status_updated")){
+                    if(resultJson.has("complaint_status")){
+                        status=resultJson.getString("complaint_status");
+
+                        /*complaintObj=resultJson.getJSONObject("complaint");
+                        if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                        if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");
+                        }
+                        if (complaintObj.has("place")) {place = complaintObj.getString("place");
+                        }
+                        if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                        if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");
+                        }
+                        //if (resultJson.has("message")) {}
+                        if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+                        complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);*/
+                    }
+                }else if(message.equals("no_complaint_found")){
+                    Log.i("rajat", "no_complaint_found");
+                }
+            }else{
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(status + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void DeleteComplaintApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+            JSONObject complaintObj;
+            ComplaintObject complaintObject;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaint_successfully_deleted")){
+                    Log.i("rajat", "complaint_successfully_deleted");
+                }else if(message.equals("complaint_not_exist")){
+                    Log.i("rajat", "complaint_not_exist");
+                }
+            }else{
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(status + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void VoteApiJsonParser(String JsonStringResult, Context con) {
+        try {
+
+            String message="";
+
+            int down=0;
+            int up=0;
+            boolean canVote=true;
+            String complaintId="";
+            String vote_id="";
+            JSONObject complaintObj;
+            JSONObject voteObj;
+            ComplaintObject complaintObject;
+            VoteObject voteObject;
+            JSONArray userVoteArr;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("voted_success")){
+
+                    if(resultJson.has("vote")){
+                        voteObj=resultJson.getJSONObject("vote");
+                        if (voteObj.has("up")) {up = voteObj.getInt("up");}
+                        if (voteObj.has("down")) {down = voteObj.getInt("down");}
+                        if (voteObj.has("_id")) {vote_id = voteObj.getString("_id");}
+                        if (voteObj.has("canVote")) {canVote = voteObj.getBoolean("canVote");}
+                        if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
+                        if (voteObj.has("userVotesArr")){
+                            userVoteArr = voteObj.getJSONArray("userVoteArr");
+
+                        }
+                        voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
+                    }
+                    //if message voted_success then UI update
+                }else if(message.equals("voting_over")){
+                    Log.i("rajat", "voting_over");
+                }else if(message.equals("no_voting_started")){
+                    Log.i("rajat", "no_voting_started");
+                }
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(  " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void VoteStatusChangeApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String message="";
+            int down=0;
+            int up=0;
+            boolean canVote=true;
+            String complaintId="";
+            String vote_id="";
+            JSONObject complaintObj;
+            JSONObject voteObj;
+            ComplaintObject complaintObject;
+            VoteObject voteObject;
+            JSONArray userVoteArr;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("vote_status_changed")){
+
+                    if(resultJson.has("vote")){
+                        voteObj=resultJson.getJSONObject("vote");
+                        if (voteObj.has("up")) {up = voteObj.getInt("up");}
+                        if (voteObj.has("down")) {down = voteObj.getInt("down");}
+                        if (voteObj.has("_id")) {vote_id = voteObj.getString("_id");}
+                        if (voteObj.has("canVote")) {canVote = voteObj.getBoolean("canVote");}
+                        if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
+                        if (voteObj.has("userVotesArr")){
+                            userVoteArr = voteObj.getJSONArray("userVoteArr");
+                        }
+                        voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
+                    }
+                    //if message voted_success then UI update
+                }else if(message.equals("no_voting_started")){
+                    Log.i("rajat", "no_voting_started");
+                }
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog( " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
+
 }
