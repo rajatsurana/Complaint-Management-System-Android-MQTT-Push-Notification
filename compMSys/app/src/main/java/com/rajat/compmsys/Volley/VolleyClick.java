@@ -72,12 +72,12 @@ public class VolleyClick {
             Tools.showAlertDialog("Internet Available", context);
         }
     }
-    public static void newComplaintClick(String userId,String solver,String place,  String description,String status,String topic,Context context){
+    public static void newComplaintClick(String userId,String solver,String place,  String description,String status,String hostel,Context context){
         CheckNetwork chkNet = new CheckNetwork(context);
         String URL = "http://192.168.43.200:3000/api/newComplaint";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.NewComplaintCall(URL, context, userId, solver, place, description, status, topic);
+            CallVolley.NewComplaintCall(URL, context, userId, solver, place, description, status, hostel);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }

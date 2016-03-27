@@ -346,7 +346,7 @@ public class CallVolley {
                 VolleySingleton.getInstance(context).addToRequestQueue(request);
         }
 
-        public static void NewComplaintCall(String url, final Context context,final String userId,final String solver, final String place, final String description,final String status, final String topic ){
+        public static void NewComplaintCall(String url, final Context context,final String userId,final String solver, final String place, final String description,final String status, final String hostel ){
                 //pDialog=  Tools.showProgressBar(context);
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
                 {
@@ -402,8 +402,8 @@ public class CallVolley {
                                 params.put("place",place);
                                 params.put("status",status);
                                 params.put("description",description);
-                                params.put("topic",topic);
-
+                                //params.put("topic",topic);
+                                params.put("hostel",hostel);
                                 return params;
                         }
 
