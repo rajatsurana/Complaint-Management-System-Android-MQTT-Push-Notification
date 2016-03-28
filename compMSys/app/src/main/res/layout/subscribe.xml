@@ -1,0 +1,35 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.rajat.compmsys.subscribe">
+
+    <!-- TODO: Update blank fragment layout -->
+
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hostel notifications"
+        android:id="@+id/switch1"
+        android:layout_alignParentTop="true"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingBottom="16dp"
+        android:layout_centerHorizontal="true" />
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insti notification"
+        android:id="@+id/switch2"
+        android:layout_below="@+id/switch1"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingBottom="16dp"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

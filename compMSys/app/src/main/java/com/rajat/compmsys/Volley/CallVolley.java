@@ -24,6 +24,8 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.MainActivity;
 import com.rajat.compmsys.Tools.Tools;
 
 import org.json.JSONObject;
@@ -86,20 +88,10 @@ public class CallVolley {
                                 }
                                 @Override
                                 protected Map<String, String> getParams() throws AuthFailureError {
-                                        Map<String, String> params = new HashMap<>();
+                                        Map<String, String> params = new HashMap<String, String>();
                                         params.put("email",email);
                                         params.put("password",password);
-                                        /*
-                                        JSONArray productIdsArr=new JSONArray();
-                                        JSONArray quantitiesArr= new JSONArray();
-                                        for(int x=0;x<productIds.length;x++){
-                                                productIdsArr.put(productIds[x]);
-                                                quantitiesArr.put(quantities[x]);
-                                        }
-                                        params.put("customerId",customerId);
-                                        params.put("productIds",productIdsArr.toString());
-                                        params.put("quantityVals",quantitiesArr.toString());
-                                        */
+
                                         return params;
                                 }
                         };
@@ -480,6 +472,57 @@ public class CallVolley {
                                 try
                                 {
                                         JSONParser.SearchComplaintsApiJsonParser(response, context);
+                                        Log.i("rajat", " onResponseActive " + response);
+                                        //pDialog.dismiss();
+                                }
+                                catch (Exception localException)
+                                {
+                                        Log.i("rajat"," onResponseException "+localException.getMessage());
+                                        localException.printStackTrace();
+                                }
+                        }
+                }
+                        , new Response.ErrorListener()
+                {
+                        //if error occurs
+                        @Override
+                        public void onErrorResponse(VolleyError error)
+                        {
+                                error.printStackTrace();
+                                Log.i("rajat", "onErrorResponse" + error.toString());
+                                //pDialog.dismiss();
+                                Tools.showAlertDialog(error.toString(), context);
+                        }
+                }
+                ){
+
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                                //Log.i("size in getHeader: ",myHeaders.size()+"");
+                                Map<String, String> mHeaders=new HashMap<String,String>();//myHeaders;
+                                mHeaders.put("x-access-token", MainActivity.sharedpreferences.getString("token", ""));
+                                //context.getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE).getString("token","")
+                                return mHeaders;
+                        }
+                };
+
+                //how many times to try and for how much duration
+                setCustomRetryPolicy(request);
+                //get instance of volleysingleton and add reuest to the queue
+                VolleySingleton.getInstance(context).addToRequestQueue(request);
+        }
+
+        public static void SolverComplaintsCall(String url, final Context context){
+                //pDialog=  Tools.showProgressBar(context);
+                StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
+                {
+                        // if a reponse is recieved after sending request
+                        @Override
+                        public void onResponse(String response)
+                        {
+                                try
+                                {
+                                        JSONParser.SolverComplaintsApiJsonParser(response, context);
                                         Log.i("rajat", " onResponseActive " + response);
                                         //pDialog.dismiss();
                                 }

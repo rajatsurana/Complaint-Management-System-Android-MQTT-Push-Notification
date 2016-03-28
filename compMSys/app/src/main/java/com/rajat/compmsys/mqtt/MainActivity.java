@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main_1);
 		Intent intent = new Intent(this, MQTTService.class);
 		startService(intent);
 		Button connect = (Button)findViewById(R.id.connectButton);

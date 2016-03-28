@@ -10,11 +10,18 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.rajat.compmsys.LoginActivity;
 import com.rajat.compmsys.MainActivity;
+
 import com.rajat.compmsys.Objects.ComplaintObject;
 import com.rajat.compmsys.Objects.UserObject;
 import com.rajat.compmsys.Objects.VoteObject;
+import com.rajat.compmsys.R;
 import com.rajat.compmsys.Tools.Tools;
+import com.rajat.compmsys.adapter.MyRecyclerViewAdapter;
+import com.rajat.compmsys.addnewuser;
+import com.rajat.compmsys.listview;
+import com.rajat.compmsys.search;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,9 +50,7 @@ public class JSONParser {
             JSONObject resultJson = new JSONObject(JsonStringResult);
             if (resultJson.has("token")) {
                 token = resultJson.getString("token");
-                MainActivity.editor = MainActivity.sharedpreferences.edit();
-                MainActivity.editor.putString("token", token);
-                MainActivity.editor.apply();
+
                 if (resultJson.has("message")) {message = resultJson.getString("message");}
                 if(resultJson.has("user")){
                     userObj=resultJson.getJSONObject("user");
@@ -61,11 +66,21 @@ public class JSONParser {
 
                 user=new UserObject(email,user_id,whoCreated,category,hostel,password);
 
+                Log.i("rajat", email + " " + user_id + " " + token + " " + category + " " + message+" "+error);
+//                Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message+" "+error, con);
+                Intent openH = new Intent(con, MainActivity.class);
+                openH.putExtra("token", token);
+                openH.putExtra("email", user.getEmail());
+                openH.putExtra("id", user.getUser_id());
+                openH.putExtra("hostel", user.getHostel());
+                openH.putExtra("category", user.getCategory());
+                openH.putExtra("whocreated",user.getWhoCreated());
+                con.startActivity(openH);
+
             } else if (resultJson.has("error")) {
                 error = resultJson.getString("error");
             }
-            Log.i("rajat", email + " " + user_id + " " + token + " " + category + " " + message+" "+error);
-            Tools.showAlertDialog(email + " " + user_id  + " " + category + " " + message+" "+error, con);
+
         } catch (Exception e) {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
@@ -101,10 +116,33 @@ public class JSONParser {
                         if (userObj.has("category")) {category = userObj.getString("category");}
 
                         user=new UserObject(email,user_id,whoCreated,category,hostel,password);
+                        Toast.makeText(con, "User Created", Toast.LENGTH_SHORT).show();
+                        addnewuser fragment = new addnewuser();
+          /*  Bundle b=new Bundle();
+            b.putInt("id",1);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+                        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                                ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.frame_container,fragment);
+                        fragmentTransaction.commit();
                     }
                 }else if (message.equals("user_already_exists")){
+                    addnewuser fragment = new addnewuser();
+          /*  Bundle b=new Bundle();
+            b.putInt("id",1);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+                    android.support.v4.app.FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_container,fragment);
+                    fragmentTransaction.commit();
+                    Toast.makeText(con, "User already exists", Toast.LENGTH_SHORT).show();
                     Log.i("rajat", "User already exists");
                 }
+                else{Toast.makeText(con, "unsucessful", Toast.LENGTH_SHORT).show();}
             }
 
             Log.i("rajat", email + " " + user_id + " "  + " " + category + " " + message);
@@ -237,7 +275,7 @@ public class JSONParser {
                         if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
                         if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
                         if (complaintObj.has("place")) {place = complaintObj.getString("place");}
-                        if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                        if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                         if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
                         //if (resultJson.has("message")) {}
                         if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
@@ -254,12 +292,13 @@ public class JSONParser {
 
                         voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
                     }
+                    VolleyClick.myComplaintsClick(MainActivity.sharedpreferences.getString("id",""),con);
                 }
             }else{
                 Log.i("rajat", "complaint not filed");
             }
             //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
-            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+            Tools.showAlertDialog(topic + " " + place  + " " + description + " " + message, con);
         } catch (Exception e) {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
@@ -295,7 +334,7 @@ public class JSONParser {
                             if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
                             if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
                             if (complaintObj.has("place")) {place = complaintObj.getString("place");}
-                            if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                            if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                             if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
                             //if (resultJson.has("message")) {}
                             if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
@@ -304,16 +343,31 @@ public class JSONParser {
                         }
                         //complaintObj=resultJson.getJSONObject("complaint");
                         Log.i("rajat","size:- "+complaintObjList.size());
+
+
                     }
 
                 }else if(message.equals("no_complaints_found")){
 
                 }
+
+
             } else {
                 Log.i("rajat", "complaint not found");
             }
             //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
-            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+            //Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+            listview fragment = new listview();
+            Bundle b=new Bundle();
+            b.putInt("id",0);
+            b.putParcelableArrayList("allcomplaints",complaintObjList);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame_container,fragment);
+            fragmentTransaction.commit();
         } catch (Exception e) {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
@@ -344,25 +398,32 @@ public class JSONParser {
                 if(message.equals("complaints_found")){
                     if(resultJson.has("complaints")){
                         complaints = resultJson.getJSONArray("complaints");
+                        Log.i("rajat",complaints.length()+":complaints.len");
                         for (int i = 0; i < complaints.length(); i++) {
+
                             complaintObj = complaints.getJSONObject(i);
                             if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
                             if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
                             if (complaintObj.has("place")) {place = complaintObj.getString("place");}
-                            if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+                            if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                             if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
                             //if (resultJson.has("message")) {}
                             if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+
                             complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
                             complaintObjList.add(complaintObject);
                         }
                         //complaintObj=resultJson.getJSONObject("complaint");
                         Log.i("rajat","size:- "+complaintObjList.size());
                     }
+                    search.mAdapter = new MyRecyclerViewAdapter(complaintObjList);
+                    search.mAdapter.notifyDataSetChanged();
+                    search.mRecyclerView.setAdapter(search.mAdapter);
 
                 }else if(message.equals("no_complaints_found")){
 
                 }
+
             } else {
                 Log.i("rajat", "complaint not found");
             }
@@ -373,6 +434,78 @@ public class JSONParser {
         }
     }
 
+    public static void SolverComplaintsApiJsonParser(String JsonStringResult, Context con) {
+        try {
+            String solver = "";
+            String user_id = "";
+            String place="";
+            String description="";
+            String status="";
+            String message="";
+            String topic="";
+            String complaint_id="";
+
+            JSONObject complaintObj;
+
+            ComplaintObject complaintObject;
+
+            ArrayList<ComplaintObject> complaintObjList = new ArrayList<ComplaintObject>();
+            JSONArray complaints;
+            //create json object from response string
+            JSONObject resultJson = new JSONObject(JsonStringResult);
+            if (resultJson.has("message")) {
+                //token = resultJson.getString("message");
+                message = resultJson.getString("message");
+                if(message.equals("complaints_found")){
+                    if(resultJson.has("complaints")){
+                        complaints = resultJson.getJSONArray("complaints");
+                        Log.i("rajat",complaints.length()+":complaints.len");
+                        for (int i = 0; i < complaints.length(); i++) {
+
+                            complaintObj = complaints.getJSONObject(i);
+                            if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
+                            if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");}
+                            if (complaintObj.has("place")) {place = complaintObj.getString("place");}
+                            if (complaintObj.has("description")) {description = complaintObj.getString("description");}
+                            if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            //if (resultJson.has("message")) {}
+                            if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
+
+                            complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+                            complaintObjList.add(complaintObject);
+                        }
+                        //complaintObj=resultJson.getJSONObject("complaint");
+                        Log.i("rajat","size:- "+complaintObjList.size());
+                        listview fragment = new listview();
+                        Bundle b=new Bundle();
+                        b.putInt("id",1);
+                        b.putParcelableArrayList("allcomplaints",complaintObjList);
+                        fragment.setArguments(b);
+                        //fragment.setArguments();*/
+
+                        android.support.v4.app.FragmentTransaction fragmentTransaction =
+                                ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.frame_container,fragment);
+                        fragmentTransaction.commit();
+                    }
+
+                    //search.mAdapter = new MyRecyclerViewAdapter(complaintObjList);
+                    //search.mAdapter.notifyDataSetChanged();
+                    //search.mRecyclerView.setAdapter(search.mAdapter);
+
+                }else if(message.equals("no_complaints_found")){
+
+                }
+
+            } else {
+                Log.i("rajat", "complaint not found");
+            }
+            //Log.i("rajat", email + " " + user_id + " " +  " " + category + " " + message);
+            Tools.showAlertDialog(topic + " " + user_id  + " " + solver + " " + message, con);
+        } catch (Exception e) {
+            Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
+        }
+    }
     public static void ComplaintDescriptionApiJsonParser(String JsonStringResult, Context con) {
         try {
             String solver = "";

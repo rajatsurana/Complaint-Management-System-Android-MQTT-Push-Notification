@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context="com.rajat.compmsys.admin_complain">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:id="@+id/admin_image"
+        android:src="@drawable/ic_thumb_up_white_48dp"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/admin_image"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:id="@+id/status" />
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_below="@+id/status"
+        android:layout_height="wrap_content"
+        android:id="@+id/complain_status"
+        android:layout_gravity="center_horizontal"
+      />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/vote"
+        android:textStyle="bold"
+        android:layout_below="@id/complain_status"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Post"
+        android:layout_below="@id/vote"
+        android:id="@+id/post_button"
+        />
+
+</RelativeLayout>
