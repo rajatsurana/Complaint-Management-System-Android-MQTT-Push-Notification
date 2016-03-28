@@ -338,8 +338,9 @@ public class CallVolley {
                 VolleySingleton.getInstance(context).addToRequestQueue(request);
         }
 
-        public static void NewComplaintCall(String url, final Context context,final String userId,final String solver, final String place, final String description,final String status, final String hostel ){
+        public static void NewComplaintCall(String url, final Context context,final Bitmap bitmap,final String userId,final String solver, final String place, final String description,final String status, final String hostel ){
                 //pDialog=  Tools.showProgressBar(context);
+                final Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
                 {
                         // if a reponse is recieved after sending request
@@ -388,6 +389,8 @@ public class CallVolley {
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
+                                String imgStr= getStringImage(bitmap2);
+                                params.put("imageFile",imgStr);
                                 //final String userId,final String solver, final String place, final String description,final String status, final String topic
                                 params.put("userId",userId);
                                 params.put("solver",solver);

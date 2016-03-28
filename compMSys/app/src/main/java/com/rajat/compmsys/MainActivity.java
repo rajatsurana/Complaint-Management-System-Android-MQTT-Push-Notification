@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity
         category =(TextView)header.findViewById(R.id.category);
         category.setText(getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).getString("category",""));
         navigationView.setNavigationItemSelectedListener(this);
-        VolleyClick.myComplaintsClick(getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).getString("id",""),MainActivity.this);
+        if(sharedpreferences.getString("category","").equals("Dean")) VolleyClick.solverComplaintsClick(getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).getString("category",""),MainActivity.this);
+            else VolleyClick.myComplaintsClick(getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).getString("id",""),MainActivity.this);
     }
 
     @Override

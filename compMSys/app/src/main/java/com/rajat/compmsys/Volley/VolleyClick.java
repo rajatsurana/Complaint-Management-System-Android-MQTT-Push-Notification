@@ -82,12 +82,13 @@ public class VolleyClick {
             Tools.showAlertDialog("Internet Available", context);
         }
     }
-    public static void newComplaintClick(String userId,String solver,String place,  String description,String status,String hostel,Context context){
+    public static void newComplaintClick(Bitmap bitmap,String userId,String solver,String place,  String description,String status,String hostel,Context context){
         CheckNetwork chkNet = new CheckNetwork(context);
         String URL = "http://192.168.43.196:3000/api/newComplaint";
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
-            CallVolley.NewComplaintCall(URL, context, userId, solver, place, description, status, hostel);
+
+            CallVolley.NewComplaintCall(URL, context,bitmap, userId, solver, place, description, status, hostel);
         } else {
             Tools.showAlertDialog("Internet Available", context);
         }
@@ -103,9 +104,9 @@ public class VolleyClick {
         }
     }
 
-    public static void searchComplaintsClick(String topic,Context context){
+    public static void searchComplaintsClick(String topic,String userId,Context context){
         CheckNetwork chkNet = new CheckNetwork(context);
-        String URL = "http://192.168.43.196:3000/api/searchComplaints/"+topic;
+        String URL = "http://192.168.43.196:3000/api/searchComplaints/"+userId+"/"+topic;
         if (!chkNet.checkNetwork()) {
             VolleySingleton.getInstance(context).getRequestQueue().getCache().clear();
             CallVolley.SearchComplaintsCall(URL, context);
