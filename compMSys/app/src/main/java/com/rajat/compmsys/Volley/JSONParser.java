@@ -20,10 +20,13 @@ import com.rajat.compmsys.R;
 import com.rajat.compmsys.Tools.Tools;
 import com.rajat.compmsys.adapter.MyRecyclerViewAdapter;
 import com.rajat.compmsys.addnewuser;
+import com.rajat.compmsys.db.DatabaseHandler;
 import com.rajat.compmsys.listview;
+import com.rajat.compmsys.mqtt.MQTTService;
 import com.rajat.compmsys.search;
 import com.rajat.compmsys.vote_dialogbox;
 
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -278,10 +281,11 @@ public class JSONParser {
                         if (complaintObj.has("place")) {place = complaintObj.getString("place");}
                         if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                         if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
-                        //if (resultJson.has("message")) {}
+                        if (complaintObj.has("status")) {status = complaintObj.getString("status");}
                         if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
 
                         complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+
                     }
                     if(resultJson.has("vote")){
                         voteObj=resultJson.getJSONObject("vote");
@@ -292,6 +296,18 @@ public class JSONParser {
                         if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
 
                         voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
+                    }
+                    if(!topic.equals("Personal")){
+
+                        String payload=solver+":"+user_id+":"+place+":"+description+":"+status+":"+topic+":"+complaint_id;
+                        MqttMessage messages = new MqttMessage(payload.getBytes());
+                        messages.setQos(1);
+                        if(topic.equals(MainActivity.sharedpreferences.getString("hostel",""))){
+                            MQTTService.mqttClient.publish(MainActivity.sharedpreferences.getString("hostel",""),messages);
+                        }
+                        if(topic.equals("Institute")){
+                            MQTTService.mqttClient.publish("Institute",messages);
+                        }
                     }
                     VolleyClick.myComplaintsClick(MainActivity.sharedpreferences.getString("id",""),con);
                 }
@@ -409,6 +425,7 @@ public class JSONParser {
                             if (complaintObj.has("place")) {place = complaintObj.getString("place");}
                             if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                             if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            if (complaintObj.has("status")) {status = complaintObj.getString("status");}
                             //if (resultJson.has("message")) {}
                             if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
 

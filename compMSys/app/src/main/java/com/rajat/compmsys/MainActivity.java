@@ -17,9 +17,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.rajat.compmsys.Volley.VolleyClick;
+import com.rajat.compmsys.mqtt.MQTTService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    public static Context context;
     public static final String MyPREFERENCES = "MyPrefs" ;
     public static SharedPreferences sharedpreferences;
     public static SharedPreferences.Editor editor ;
@@ -40,6 +42,9 @@ public class MainActivity extends AppCompatActivity
         MainActivity.editor.putString("category", i.getStringExtra("category"));
         MainActivity.editor.putString("whocreated",i.getStringExtra("whocreated"));
         MainActivity.editor.apply();
+        Intent intent = new Intent(this, MQTTService.class);
+        startService(intent);
+        context =MainActivity.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

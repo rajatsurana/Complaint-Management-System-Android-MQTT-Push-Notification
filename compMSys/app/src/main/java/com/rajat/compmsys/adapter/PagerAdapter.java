@@ -8,7 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.Objects.ComplaintObject;
 import com.rajat.compmsys.card_view;
+import com.rajat.compmsys.db.DatabaseHandler;
+
+import java.util.ArrayList;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
@@ -23,14 +28,20 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
+                DatabaseHandler dbh = new DatabaseHandler(MainActivity.context);
+                ArrayList<ComplaintObject> complainObjList=dbh.readAllPersonalComplaints();
                 card_view tab1 = new card_view();
                 Bundle b=new Bundle();
-                b.putInt("id",0);
+                b.putParcelableArrayList("complainObjList",complainObjList);
+                b.putInt("id", 0);
                 tab1.setArguments(b);
                 return tab1;
             case 1:
+                DatabaseHandler dbh2 = new DatabaseHandler(MainActivity.context);
+                ArrayList<ComplaintObject> complainObjList2=dbh2.readAllPublicComplaints();
                 card_view tab2 = new card_view();
                 Bundle b1=new Bundle();
+                b1.putParcelableArrayList("complainObjList",complainObjList2);
                 b1.putInt("id",1);
                 tab2.setArguments(b1);
                 return tab2;

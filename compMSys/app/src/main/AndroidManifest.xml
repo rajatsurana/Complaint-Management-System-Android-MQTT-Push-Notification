@@ -24,20 +24,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.rajat.compmsys.mqtt.FullScreenActivityTest"
-            android:label="@string/app_name" >
-        </activity>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        </activity>
         <activity android:name=".imagedialog" android:theme="@style/myDialogTheme" />
         <activity android:name=".vote_dialogbox" android:theme="@style/myDialogTheme" />
         <service android:enabled="true"
             android:name="com.rajat.compmsys.mqtt.MQTTService"/>
 
-        <service android:enabled="true"
-            android:name="com.rajat.compmsys.mqtt.backgroundservice"/>
     </application>
 </manifest>

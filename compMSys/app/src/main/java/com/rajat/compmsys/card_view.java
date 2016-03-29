@@ -15,6 +15,7 @@ import com.rajat.compmsys.Objects.ComplaintObject;
 import com.rajat.compmsys.adapter.Listobject;
 import com.rajat.compmsys.adapter.MyRecyclerViewAdapter;
 import com.rajat.compmsys.adapter.SwipeableRecyclerViewTouchListener;
+import com.rajat.compmsys.db.DatabaseHandler;
 
 import java.util.ArrayList;
 
@@ -43,16 +44,17 @@ public class card_view extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        Bundle b= getArguments();
+        values=b.getParcelableArrayList("complainObjList");
         View view= inflater.inflate(R.layout.cardview, container, false);
        /* for(int i=0;i<10;i++){
             Listobject yo=new Listobject("supp","yo");
             values.add(yo);
         }*/
-        for(int i=0;i<10;i++){
-            ComplaintObject yo=new ComplaintObject("papa","arpit","girnar","supp","yo","gsgw","eqgag");
-            values.add(yo);
-        }
+       // for(int i=0;i<10;i++){
+            //ComplaintObject yo=new ComplaintObject("papa","arpit","girnar","supp","yo","gsgw","eqgag");
+            //values.add(yo);
+        //}
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -78,7 +80,10 @@ public class card_view extends Fragment {
                             @Override
                             public void onDismissedBySwipeLeft(RecyclerView recyclerView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
+                                    DatabaseHandler dbh =new DatabaseHandler(getActivity());
+                                    dbh.deleteMyComplaint(values.get(position).getComplaint_id());
                                     values.remove(position);
+
                                     mAdapter.notifyItemRemoved(position);
                                 }
                                 mAdapter.notifyDataSetChanged();
@@ -86,6 +91,9 @@ public class card_view extends Fragment {
                             @Override
                             public void onDismissedBySwipeRight(RecyclerView recyclerView, int[] reverseSortedPositions) {
                                 for (int position : reverseSortedPositions) {
+
+                                    DatabaseHandler dbh =new DatabaseHandler(getActivity());
+                                    dbh.deleteMyComplaint(values.get(position).getComplaint_id());
                                     values.remove(position);
                                     mAdapter.notifyItemRemoved(position);
                                 }
@@ -99,6 +107,8 @@ public class card_view extends Fragment {
             public void onItemClick(int position, View v) {
                 if(notification.pagertab==1){
                     Intent openH = new Intent(getActivity(), vote_dialogbox.class);
+                    openH.putExtra("complaint",values.get(position));
+
                     startActivity(openH);}
                 else{
                     Intent openH = new Intent(getActivity(), imagedialog.class);

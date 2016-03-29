@@ -11,6 +11,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.rajat.compmsys.mqtt.MQTTService;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,19 +44,43 @@ public class subscribe extends Fragment {
         View v= inflater.inflate(R.layout.subscribe, container, false);
         hostel=(Switch)v.findViewById(R.id.switch1);
         insti=(Switch)v.findViewById(R.id.switch2);
+        hostel.setChecked(true);
+        insti.setChecked(true);
         hostel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String hostel=MainActivity.sharedpreferences.getString("hostel", "");
                 if(isChecked){
+                    MQTTService.doSubscribe(hostel);
+                    if(!MQTTService.str.contains(hostel)){
+                        MQTTService.str.add(hostel);
+                        //MQTTService.itr.add(1);
+                    }
                     Toast.makeText(getContext(),"Hostel notification ON", Toast.LENGTH_SHORT).show();}
                 else{
+                    MQTTService.doUnsubscribe(hostel);
+                    if(MQTTService.str.contains(hostel)){
+                        MQTTService.str.remove(hostel);
+                        //MQTTService.itr.remove(1);
+                    }
                     Toast.makeText(getContext(),"Hostel notification OFF", Toast.LENGTH_SHORT).show();}
                 }
         });
         insti.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
+                    MQTTService.doSubscribe("Institute");
+                    if(!MQTTService.str.contains("Institute")){
+                        MQTTService.str.add("Institute");
+                        //MQTTService.itr.add(1);
+                    }
                     Toast.makeText(getContext(),"Insti notification ON", Toast.LENGTH_SHORT).show();}
                 else{
+                    MQTTService.doUnsubscribe("Institute");
+                    if(MQTTService.str.contains("Institute")){
+                        MQTTService.str.remove("Institute");
+                        //MQTTService.itr.remove(1);
+                    }
+
                     Toast.makeText(getContext(),"Insti notification OFF", Toast.LENGTH_SHORT).show();}
             }
         });

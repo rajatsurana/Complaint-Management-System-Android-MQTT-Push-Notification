@@ -64,7 +64,7 @@ public class new_complaint extends Fragment {
         Spinner spinner = (Spinner) v.findViewById(R.id.spinner_type);
         description=(EditText) v.findViewById(R.id.description);
         place=(EditText) v.findViewById(R.id.place);
-
+        image = (ImageView) v.findViewById(R.id.imageView_nc);
         // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
@@ -88,9 +88,9 @@ public class new_complaint extends Fragment {
               //  image = (ImageView) v.findViewById(R.id.imageView_nc);
             //  Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
             //    Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
-                image = (ImageView) v.findViewById(R.id.imageView_nc);
+
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
-                Bitmap bit=Bitmap.createScaledBitmap(bitmap,250,250,true);
+                Bitmap bit=Bitmap.createScaledBitmap(bitmap, 250, 250, true);
             //  if(!rotatedBitmap.equals(null))rotatedBitmap= BitmapFactory.decodeResource(getResources(),R.drawable.ic_thumb_up_black_48dp);
 
                 VolleyClick.newComplaintClick(bit,MainActivity.sharedpreferences.getString("id",""),item,place.getText().toString(),description.getText().toString(),"",MainActivity.sharedpreferences.getString("hostel",""),getContext());
@@ -101,7 +101,8 @@ public class new_complaint extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.png");
+                String root=Environment.getExternalStorageDirectory().toString();
+                File file = new File(root+ "/compMSys/image.png");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAMERA_PIC_REQUEST);
 
@@ -134,7 +135,8 @@ public class new_complaint extends Fragment {
 
             BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
             bmpFactoryOptions.inJustDecodeBounds = false;
-            File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.png");
+            String root=Environment.getExternalStorageDirectory().toString();
+            File file = new File(root+ "/compMSys/image.png");
 
             //imageFilePath image path which you pass with intent
             Bitmap bp = BitmapFactory.decodeFile(file.getAbsolutePath(), bmpFactoryOptions);
@@ -148,7 +150,7 @@ public class new_complaint extends Fragment {
            // note.addImage(rotatedBitmap);
          //   note.saveImageToDevice(rotatedBitmap);
 
-            image = (ImageView) v.findViewById(R.id.imageView_nc);
+
            // Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
           //  Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
             image.setImageBitmap(bp);
