@@ -1,5 +1,6 @@
 package com.rajat.compmsys;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,5 +47,21 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)!=null){
+            if(!getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).getString("token","").equals("")){
+                Intent openH=new Intent(LoginActivity.this,MainActivity.class);
+                startActivity(openH);
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
 

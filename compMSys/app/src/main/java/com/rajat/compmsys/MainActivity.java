@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity
         MainActivity.editor.putString("hostel", i.getStringExtra("hostel"));
         MainActivity.editor.putString("category", i.getStringExtra("category"));
         MainActivity.editor.putString("whocreated",i.getStringExtra("whocreated"));
+        MainActivity.editor.putBoolean("HostelSub",true);
+        MainActivity.editor.putBoolean("InstiSub",true);
         MainActivity.editor.apply();
         Intent intent = new Intent(this, MQTTService.class);
         startService(intent);
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+          //  super.onBackPressed();
         }
     }
 
@@ -188,6 +190,17 @@ public class MainActivity extends AppCompatActivity
             VolleyClick.solverComplaintsClick(getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE).getString("category",""),MainActivity.this);
 
 
+        }else if(id==R.id.changepassword){
+            change_password fragment = new change_password();
+          /*  Bundle b=new Bundle();
+            b.putInt("id",1);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+            android.support.v4.app.FragmentTransaction fragmentTransaction =
+                    this.getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.frame_container,fragment);
+            fragmentTransaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

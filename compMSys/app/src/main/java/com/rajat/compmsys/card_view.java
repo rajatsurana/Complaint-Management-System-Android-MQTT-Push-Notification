@@ -31,7 +31,7 @@ public class card_view extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-   private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener mListener;
     ArrayList<ComplaintObject> values=new ArrayList<>();
 
     public card_view() {}
@@ -51,9 +51,9 @@ public class card_view extends Fragment {
             Listobject yo=new Listobject("supp","yo");
             values.add(yo);
         }*/
-       // for(int i=0;i<10;i++){
-            //ComplaintObject yo=new ComplaintObject("papa","arpit","girnar","supp","yo","gsgw","eqgag");
-            //values.add(yo);
+        // for(int i=0;i<10;i++){
+        //ComplaintObject yo=new ComplaintObject("papa","arpit","girnar","supp","yo","gsgw","eqgag");
+        //values.add(yo);
         //}
         mRecyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -111,8 +111,9 @@ public class card_view extends Fragment {
 
                     startActivity(openH);}
                 else{
-                    Intent openH = new Intent(getActivity(), imagedialog.class);
-                    startActivity(openH);}
+                  /*  Intent openH = new Intent(getActivity(), imagedialog.class);
+                    openH.putExtra("complaint",values.get(position));
+                    startActivity(openH);*/}
 
                 //    Toast.makeText(getContext(), "Selected: " + values.get(position).first, Toast.LENGTH_SHORT).show();
             }

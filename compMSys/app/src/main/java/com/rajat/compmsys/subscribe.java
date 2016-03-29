@@ -44,41 +44,61 @@ public class subscribe extends Fragment {
         View v= inflater.inflate(R.layout.subscribe, container, false);
         hostel=(Switch)v.findViewById(R.id.switch1);
         insti=(Switch)v.findViewById(R.id.switch2);
-        hostel.setChecked(true);
-        insti.setChecked(true);
+        hostel.setChecked(MainActivity.sharedpreferences.getBoolean("hostelSub",true));
+        insti.setChecked(MainActivity.sharedpreferences.getBoolean("InstiSub",true));
         hostel.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String hostel=MainActivity.sharedpreferences.getString("hostel", "");
+
                 if(isChecked){
                     MQTTService.doSubscribe(hostel);
+
+                    MainActivity.editor=MainActivity.sharedpreferences.edit();
+                    MainActivity.editor.putBoolean("hostelSub", true);
+                    MainActivity.editor.apply();
                     if(!MQTTService.str.contains(hostel)){
                         MQTTService.str.add(hostel);
+
                         //MQTTService.itr.add(1);
                     }
                     Toast.makeText(getContext(),"Hostel notification ON", Toast.LENGTH_SHORT).show();}
                 else{
                     MQTTService.doUnsubscribe(hostel);
+                    MainActivity.editor=MainActivity.sharedpreferences.edit();
+                    MainActivity.editor.putBoolean("hostelSub", false);
+                    MainActivity.editor.apply();
                     if(MQTTService.str.contains(hostel)){
                         MQTTService.str.remove(hostel);
+
+
                         //MQTTService.itr.remove(1);
                     }
                     Toast.makeText(getContext(),"Hostel notification OFF", Toast.LENGTH_SHORT).show();}
-                }
+            }
         });
         insti.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     MQTTService.doSubscribe("Institute");
+                    MainActivity.editor=MainActivity.sharedpreferences.edit();
+                    MainActivity.editor.putBoolean("InstiSub", true);
+                    MainActivity.editor.apply();
                     if(!MQTTService.str.contains("Institute")){
                         MQTTService.str.add("Institute");
+
+
                         //MQTTService.itr.add(1);
                     }
                     Toast.makeText(getContext(),"Insti notification ON", Toast.LENGTH_SHORT).show();}
                 else{
                     MQTTService.doUnsubscribe("Institute");
+                    MainActivity.editor=MainActivity.sharedpreferences.edit();
+                    MainActivity.editor.putBoolean("InstiSub", false);
+                    MainActivity.editor.apply();
                     if(MQTTService.str.contains("Institute")){
                         MQTTService.str.remove("Institute");
                         //MQTTService.itr.remove(1);
+
                     }
 
                     Toast.makeText(getContext(),"Insti notification OFF", Toast.LENGTH_SHORT).show();}
@@ -97,7 +117,7 @@ public class subscribe extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-          }
+    }
 
     @Override
     public void onDetach() {

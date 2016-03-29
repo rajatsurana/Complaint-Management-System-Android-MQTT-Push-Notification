@@ -20,6 +20,7 @@ import com.rajat.compmsys.R;
 import com.rajat.compmsys.Tools.Tools;
 import com.rajat.compmsys.adapter.MyRecyclerViewAdapter;
 import com.rajat.compmsys.addnewuser;
+import com.rajat.compmsys.change_password;
 import com.rajat.compmsys.db.DatabaseHandler;
 import com.rajat.compmsys.listview;
 import com.rajat.compmsys.mqtt.MQTTService;
@@ -236,7 +237,29 @@ public class JSONParser {
 
                         user=new UserObject(email,user_id,whoCreated,category,hostel,password);
                     }
+                    Toast.makeText(con,"sucessful",Toast.LENGTH_SHORT);
+                    change_password fragment = new change_password();
+          /*  Bundle b=new Bundle();
+            b.putInt("id",1);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+                    android.support.v4.app.FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_container,fragment);
+                    fragmentTransaction.commit();
                 }else if (message.equals("username_or_password_incorrect")){
+                    Toast.makeText(con,"unsucessful",Toast.LENGTH_SHORT);
+                    change_password fragment = new change_password();
+          /*  Bundle b=new Bundle();
+            b.putInt("id",1);
+            fragment.setArguments(b);
+            //fragment.setArguments();*/
+
+                    android.support.v4.app.FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity)con).getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.frame_container,fragment);
+                    fragmentTransaction.commit();
                     Log.i("rajat", "username_or_password_incorrect");
                 }
             }
@@ -590,21 +613,37 @@ public class JSONParser {
                 //token = resultJson.getString("message");
                 message = resultJson.getString("message");
                 if(message.equals("complaint_status_updated")){
-                    if(resultJson.has("complaint_status")){
-                        status=resultJson.getString("complaint_status");
+                    if(resultJson.has("complaint")){
+                        //
 
-                        /*complaintObj=resultJson.getJSONObject("complaint");
+                        complaintObj=resultJson.getJSONObject("complaint");
                         if (complaintObj.has("solver")) {solver = complaintObj.getString("solver");}
                         if (complaintObj.has("_id")) {complaint_id = complaintObj.getString("_id");
                         }
                         if (complaintObj.has("place")) {place = complaintObj.getString("place");
                         }
-                        if (complaintObj.has("canVote")) {description = complaintObj.getString("description");}
+
+                        if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                         if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");
                         }
+                        if (complaintObj.has("status"))status=complaintObj.getString("status");
                         //if (resultJson.has("message")) {}
                         if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
-                        complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);*/
+                        complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
+
+
+                        String payload=solver+":"+user_id+":"+place+":"+description+":"+status+":"+topic+":"+complaint_id;
+                        MqttMessage messages = new MqttMessage(payload.getBytes());
+                        messages.setQos(1);
+                        if(topic.equals(MainActivity.sharedpreferences.getString("hostel",""))){
+                            MQTTService.mqttClient.publish(MainActivity.sharedpreferences.getString("hostel",""),messages);
+                        }
+                        if(topic.equals("Institute")){
+                            MQTTService.mqttClient.publish("Institute",messages);
+                        }
+                        if(topic.equals("Personal")){
+                            MQTTService.mqttClient.publish(MainActivity.sharedpreferences.getString("id",""),messages);
+                        }
                     }
                     VolleyClick.solverComplaintsClick(MainActivity.sharedpreferences.getString("category",""),con);
 
@@ -621,6 +660,7 @@ public class JSONParser {
             Log.i("rajat", "Exception: Login: " + e.getLocalizedMessage());
         }
     }
+
 
     public static void DeleteComplaintApiJsonParser(String JsonStringResult, Context con) {
         try {
@@ -684,7 +724,7 @@ public class JSONParser {
                         if (voteObj.has("canVote")) {canVote = voteObj.getBoolean("canVote");}
                         if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
                         if (voteObj.has("userVotesArr")){
-                            userVoteArr = voteObj.getJSONArray("userVoteArr");
+                            userVoteArr = voteObj.getJSONArray("userVotesArr");
 
                         }
                         voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
@@ -733,7 +773,7 @@ public class JSONParser {
                         if (voteObj.has("canVote")) {canVote = voteObj.getBoolean("canVote");}
                         if (voteObj.has("complaintId")) {complaintId = voteObj.getString("complaintId");}
                         if (voteObj.has("userVotesArr")){
-                            userVoteArr = voteObj.getJSONArray("userVoteArr");
+                            userVoteArr = voteObj.getJSONArray("userVotesArr");
                         }
                         voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
                     }

@@ -14,7 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_centerInParent="true">
+            android:layout_centerInParent="true"
+            android:id="@+id/linearLayout">
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -24,6 +25,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="User ID"
+
+
                     android:maxLines="1"
                     android:singleLine="true" />
             </android.support.design.widget.TextInputLayout>
@@ -35,20 +38,52 @@
                     android:id="@+id/passwordId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+
                     android:hint="Password"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"/>
             </android.support.design.widget.TextInputLayout>
-            <Button
-                android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Login"
-                android:textStyle="bold"
-                android:clickable="true" />
 
 
         </LinearLayout>
+
+    <Button
+
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_shape"
+        android:text="Login"
+        android:textColor="#ffffff"
+        android:id="@+id/email_sign_in_button"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="45dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="IITD Complaint"
+        android:textSize="40dp"
+        android:textColor="#3F51B5"
+        android:id="@+id/textView_name1"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="78dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="40dp"
+        android:textColor="#3F51B5"
+        android:text="System"
+        android:id="@+id/textView_name2"
+        android:layout_below="@+id/textView_name1"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

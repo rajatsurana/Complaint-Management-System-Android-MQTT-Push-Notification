@@ -54,7 +54,7 @@ public class MQTTService extends Service {
     private Thread thread;
     private ConnectivityManager mConnMan;
     public static volatile IMqttAsyncClient mqttClient;
-    private String deviceId;
+    private static String deviceId;
     public static ArrayList<String> str= new ArrayList<String >();
     //public static ArrayList<Integer> itr =new ArrayList<Integer>();
     String[] strArr;
@@ -87,8 +87,8 @@ public class MQTTService extends Service {
             Log.i(TAG, intent.hasExtra("FAILOVER_CONNECTION") + " 1:2 " + intent.hasExtra(ConnectivityManager.EXTRA_IS_FAILOVER) + " :3: " + intent.hasExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
             boolean failure= intent.getBooleanExtra("FAILOVER_CONNECTION",false);
             boolean noConnect= intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-           Log.v(TAG, failure + " failure : noConnect " + noConnect);
-        NetworkInfo nw = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            Log.v(TAG, failure + " failure : noConnect " + noConnect);
+            NetworkInfo nw = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
             Log.v(TAG,nw.getTypeName()+": nw.getTypeName(): isconnected: "+ nw.isConnected());
             Log.v(TAG, "onRecieve()");
             IMqttToken token;
@@ -157,15 +157,15 @@ public class MQTTService extends Service {
         options.setKeepAliveInterval(20 * 60);
 
         try {
-            mqttClient = new MqttAsyncClient("tcp://192.168.43.200:1883", deviceId, new MemoryPersistence());
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
             token = mqttClient.connect(options);
             //Log.i("rajat", "subscribe now");
 
             token.waitForCompletion(3500);
             mqttClient.setCallback(new MqttEventCallback());
             //for(int i=0;i<str.length;i++){
-                token = mqttClient.subscribe(s,1);
-                token.waitForCompletion(5000);
+            token = mqttClient.subscribe(s,1);
+            token.waitForCompletion(5000);
             //}
 
         } catch (MqttSecurityException e) {
@@ -197,7 +197,7 @@ public class MQTTService extends Service {
         options.setKeepAliveInterval(20 * 60);
 
         try {
-            //mqttClient = new MqttAsyncClient("tcp://192.168.43.200:1883", deviceId, new MemoryPersistence());
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
             token = mqttClient.connect(options);
             //Log.i("rajat", "subscribe now");
 
@@ -234,7 +234,7 @@ public class MQTTService extends Service {
         options.setKeepAliveInterval(20 * 60);
 
         try {
-            //mqttClient = new MqttAsyncClient("tcp://192.168.43.200:1883", deviceId, new MemoryPersistence());
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
             token = mqttClient.connect(options);
             //Log.i("rajat", "subscribe now");
 
@@ -267,10 +267,14 @@ public class MQTTService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand()");
         if(!str.contains("Institute")){
-        str.add("Institute");}
-        String hostel=MainActivity.sharedpreferences.getString("hostel","");
+            str.add("Institute");}
+        String hostel=getSharedPreferences("MyPrefs",Context.MODE_PRIVATE).getString("hostel","");
         if(!str.contains(hostel)) {
             str.add(hostel);}
+        String id=getSharedPreferences("MyPrefs",Context.MODE_PRIVATE).getString("id","");
+        if(!str.contains(id)){
+            str.add(id);
+        }
         //onNetworkChange();
         return START_STICKY;
     }
@@ -311,9 +315,9 @@ public class MQTTService extends Service {
                     Log.i("rajat", "arr.length: " + arr.length);
                     //solver+":"+user_id+":"+place+":"+description+":"+status+":"+topic+":"+complaint_id
                     if(arr.length==7){
-                    String solver= arr[0];
-                    String userIds=arr[1];
-                    String place=arr[2];
+                        String solver= arr[0];
+                        String userIds=arr[1];
+                        String place=arr[2];
                         String description= arr[3];
                         String status=arr[4];
                         String topic=arr[5];
@@ -321,11 +325,11 @@ public class MQTTService extends Service {
                         //
                         ComplaintObject complaintObject=new ComplaintObject(solver,userIds,place,description,status,topic,complaint_id);
                         //if(!topic.equals("Personal")){
-                            DatabaseHandler databaseH = new DatabaseHandler(MainActivity.context);
-                            databaseH.create(complaintObject);
+                        DatabaseHandler databaseH = new DatabaseHandler(MainActivity.context);
+                        databaseH.create(complaintObject);
                         //}
 
-                    sendNotification(place,description,topic,id++);}
+                        sendNotification(status,description,place,id++);}
                     Toast.makeText(getApplicationContext(), "MQTT Message:\n" + new String(msg.getPayload()), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -342,10 +346,10 @@ public class MQTTService extends Service {
         return null;
     }
     private void sendNotification(String alert,String message,String title,int id) {
-       // Intent intent = new Intent(this, MainActivity.class);
+        // Intent intent = new Intent(this, MainActivity.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-         //       PendingIntent.FLAG_ONE_SHOT);
+        //       PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -354,7 +358,7 @@ public class MQTTService extends Service {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri);
-                //.setContentIntent(pendingIntent);
+        //.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

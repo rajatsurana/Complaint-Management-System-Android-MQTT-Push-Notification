@@ -42,7 +42,6 @@ import java.util.List;
  */
 public class new_complaint extends Fragment {
 
-    ImageView image;
     Bitmap rotatedBitmap;
     View v;
     static final int CAMERA_PIC_REQUEST = 1111;
@@ -64,7 +63,6 @@ public class new_complaint extends Fragment {
         Spinner spinner = (Spinner) v.findViewById(R.id.spinner_type);
         description=(EditText) v.findViewById(R.id.description);
         place=(EditText) v.findViewById(R.id.place);
-        image = (ImageView) v.findViewById(R.id.imageView_nc);
         // Spinner click listener
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view,
@@ -88,7 +86,7 @@ public class new_complaint extends Fragment {
               //  image = (ImageView) v.findViewById(R.id.imageView_nc);
             //  Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
             //    Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
-
+                ImageView image = (ImageView) v.findViewById(R.id.imageView_nc);
                 Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
                 Bitmap bit=Bitmap.createScaledBitmap(bitmap, 250, 250, true);
             //  if(!rotatedBitmap.equals(null))rotatedBitmap= BitmapFactory.decodeResource(getResources(),R.drawable.ic_thumb_up_black_48dp);
@@ -102,7 +100,7 @@ public class new_complaint extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 String root=Environment.getExternalStorageDirectory().toString();
-                File file = new File(root+ "/compMSys/image.png");
+                File file = new File(Environment.getExternalStorageDirectory()+File.separator+"image.png");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAMERA_PIC_REQUEST);
 
@@ -131,15 +129,27 @@ public class new_complaint extends Fragment {
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_PIC_REQUEST && resultCode == Activity.RESULT_OK) {
+            /*********** Load Captured Image And Data Start ****************/
 
-
+            // Decode it for real
             BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
             bmpFactoryOptions.inJustDecodeBounds = false;
-            String root=Environment.getExternalStorageDirectory().toString();
-            File file = new File(root+ "/compMSys/image.png");
-
+            File file = new File(Environment.getExternalStorageDirectory()+File.separator+"image.png");
             //imageFilePath image path which you pass with intent
-            Bitmap bp = BitmapFactory.decodeFile(file.getAbsolutePath(), bmpFactoryOptions);
+          //  Bitmap bp = BitmapFactory.decodeFile(file.getAbsolutePath(), bmpFactoryOptions);
+           // Bitmap bit=Bitmap.createScaledBitmap(bp, 250, 250, true);
+
+            //rotate image by 90 degrees
+
+            //add the image to the note through a function call
+
+            //String imageId = convertImageUriToFile( imageUri,CameraActivity);
+            //  Create and excecute AsyncTask to load capture image
+            // new LoadImagesFromSDCard().execute(""+imageId);
+            /*********** Load Captured Image And Data End ****************/
+
+
+            ImageView image = (ImageView) v.findViewById(R.id.imageView_nc);
 
             //rotate image by 90 degrees
            /* Matrix rotateMatrix = new Matrix();
@@ -151,9 +161,9 @@ public class new_complaint extends Fragment {
          //   note.saveImageToDevice(rotatedBitmap);
 
 
-           // Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
-          //  Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
-            image.setImageBitmap(bp);
+            Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
+            Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
+            image.setImageBitmap(b2);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
