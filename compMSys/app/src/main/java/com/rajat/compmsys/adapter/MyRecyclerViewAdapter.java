@@ -59,7 +59,7 @@ public class MyRecyclerViewAdapter extends RecyclerView
     @Override
     public void onBindViewHolder(DataObjectHolder holder, int position) {
         holder.label.setText(mDataset.get(position).getDescription());
-        holder.dateTime.setText(mDataset.get(position).getPlace());
+        holder.dateTime.setText(mDataset.get(position).getStatus());
     }
 
     public void addItem(ComplaintObject dataObj, int index) {

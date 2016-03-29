@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,7 +27,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.rajat.compmsys.MainActivity;
 import com.rajat.compmsys.MainActivity;
 import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.R;
 import com.rajat.compmsys.Tools.Tools;
+import com.rajat.compmsys.admin_complain;
 
 import org.json.JSONObject;
 
@@ -340,7 +343,7 @@ public class CallVolley {
 
         public static void NewComplaintCall(String url, final Context context,final Bitmap bitmap,final String userId,final String solver, final String place, final String description,final String status, final String hostel ){
                 //pDialog=  Tools.showProgressBar(context);
-                final Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap, 400, 400, true);
+                final Bitmap bitmap2 = bitmap;
                 StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>()
                 {
                         // if a reponse is recieved after sending request
@@ -708,6 +711,77 @@ public class CallVolley {
                                 try
                                 {
                                         JSONParser.ComplaintDescriptionApiJsonParser(response, context);
+                                        Log.i("rajat", " onResponseActive " + response);
+                                        //pDialog.dismiss();
+                                }
+                                catch (Exception localException)
+                                {
+                                        Log.i("rajat"," onResponseException "+localException.getMessage());
+                                        localException.printStackTrace();
+                                }
+                        }
+                }
+                        , new Response.ErrorListener()
+                {
+                        //if error occurs
+                        @Override
+                        public void onErrorResponse(VolleyError error)
+                        {
+                                error.printStackTrace();
+                                Log.i("rajat", "onErrorResponse" + error.toString());
+                                //pDialog.dismiss();
+                                Tools.showAlertDialog(error.toString(), context);
+                        }
+                }
+                ){
+
+                        @Override
+                        public Map<String, String> getHeaders() throws AuthFailureError {
+                                //Log.i("size in getHeader: ",myHeaders.size()+"");
+                                Map<String, String> mHeaders=new HashMap<String,String>();//myHeaders;
+                                mHeaders.put("x-access-token", MainActivity.sharedpreferences.getString("token", ""));
+                                //context.getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE).getString("token","")
+                                return mHeaders;
+                        }
+
+
+                };
+
+                //how many times to try and for how much duration
+                setCustomRetryPolicy(request);
+                //get instance of volleysingleton and add reuest to the queue
+                VolleySingleton.getInstance(context).addToRequestQueue(request);
+        }
+
+        public static void NoOfVoteCall(String url, final Context context){
+                //pDialog=  Tools.showProgressBar(context);
+                StringRequest request = new StringRequest(Request.Method.GET, url, new Response.Listener<String>()
+                {
+                        // if a reponse is recieved after sending request
+                        @Override
+                        public void onResponse(String response)
+                        {
+                                try
+                                {
+
+                                        String message="";
+                                        int up=0;
+                                        JSONObject result= new JSONObject(response);
+                                        if(result.has("message")){
+                                                message=result.getString("message");
+                                                if(message.equals("vote_found")){
+                                                        if(result.has("noOfVote")){
+                                                                up=result.getInt("noOfVote");
+                                                                admin_complain.vote.setText("No of votes "+up);
+                                                        }
+                                                        else{
+                                                                admin_complain.vote.setText("no votes added");
+                                                        }
+                                                }else{
+                                                       Log.i("rajat","vote_not_found");
+                                                }
+                                        }
+                                        //JSONParser.ComplaintDescriptionApiJsonParser(response, context);
                                         Log.i("rajat", " onResponseActive " + response);
                                         //pDialog.dismiss();
                                 }

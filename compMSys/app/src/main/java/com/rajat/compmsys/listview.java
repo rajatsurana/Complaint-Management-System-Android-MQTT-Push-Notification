@@ -86,11 +86,12 @@ public class listview extends Fragment {
                     // Toast.makeText(parent.getContext(), position, Toast.LENGTH_SHORT).show();
                     //Bundle b=new Bundle();
                     Intent openH = new Intent(getActivity(), imagedialog.class);
+                    openH.putExtra("complaint",values.get(position));
                     startActivity(openH);
                 } else {
                     admin_complain fragment = new admin_complain();
-                  /*  Bundle b=new Bundle();
-                    b.putInt("id",1);
+                    Bundle b=new Bundle();
+                    b.putParcelable("complaint",values.get(position));
                     fragment.setArguments(b);
                     //fragment.setArguments();*/
 

@@ -22,6 +22,7 @@ import com.rajat.compmsys.adapter.MyRecyclerViewAdapter;
 import com.rajat.compmsys.addnewuser;
 import com.rajat.compmsys.listview;
 import com.rajat.compmsys.search;
+import com.rajat.compmsys.vote_dialogbox;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -336,6 +337,7 @@ public class JSONParser {
                             if (complaintObj.has("place")) {place = complaintObj.getString("place");}
                             if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                             if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            if (complaintObj.has("status")) {status = complaintObj.getString("status");}
                             //if (resultJson.has("message")) {}
                             if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
                             complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);
@@ -468,6 +470,8 @@ public class JSONParser {
                             if (complaintObj.has("place")) {place = complaintObj.getString("place");}
                             if (complaintObj.has("description")) {description = complaintObj.getString("description");}
                             if (complaintObj.has("userId")) {user_id = complaintObj.getString("userId");}
+                            if (complaintObj.has("status")) {status = complaintObj.getString("status");}
+
                             //if (resultJson.has("message")) {}
                             if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
 
@@ -585,7 +589,10 @@ public class JSONParser {
                         if (complaintObj.has("topic")) {topic = complaintObj.getString("topic");}
                         complaintObject=new ComplaintObject(solver,user_id,place,description,status,topic,complaint_id);*/
                     }
+                    VolleyClick.solverComplaintsClick(MainActivity.sharedpreferences.getString("category",""),con);
+
                 }else if(message.equals("no_complaint_found")){
+                    Toast.makeText(con, "no_complaint_found", Toast.LENGTH_SHORT).show();
                     Log.i("rajat", "no_complaint_found");
                 }
             }else{
@@ -665,6 +672,8 @@ public class JSONParser {
                         }
                         voteObject=new VoteObject(down,up,canVote,complaintId,vote_id);
                     }
+                    vote_dialogbox.upvote.setImageDrawable(con.getResources().getDrawable(R.drawable.ic_thumb_up_black_48dp));
+                    vote_dialogbox.text.setText("upvoted");
                     //if message voted_success then UI update
                 }else if(message.equals("voting_over")){
                     Log.i("rajat", "voting_over");

@@ -55,7 +55,12 @@ public class MainActivity extends AppCompatActivity
             nav_Menu.findItem(R.id.all_complaints).setVisible(true);
             nav_Menu.findItem(R.id.add_user).setVisible(true);
         }
-        else if(i.getStringExtra("category").equals("Warden")||i.getStringExtra("category").equals("Dean")){
+        else if(i.getStringExtra("category").equals("Warden")){
+            nav_Menu.findItem(R.id.subscribe).setVisible(false);
+            nav_Menu.findItem(R.id.all_complaints).setVisible(true);
+            nav_Menu.findItem(R.id.add_user).setVisible(true);
+        }
+        else if(i.getStringExtra("category").equals("Dean")){
             nav_Menu.findItem(R.id.my_complaints).setVisible(false);
             nav_Menu.findItem(R.id.subscribe).setVisible(false);
             nav_Menu.findItem(R.id.all_complaints).setVisible(true);

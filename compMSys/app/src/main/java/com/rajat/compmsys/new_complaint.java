@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -39,7 +41,9 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class new_complaint extends Fragment {
+
     ImageView image;
+    Bitmap rotatedBitmap;
     View v;
     static final int CAMERA_PIC_REQUEST = 1111;
     String item;
@@ -79,8 +83,17 @@ public class new_complaint extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap b= BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher);
-                VolleyClick.newComplaintClick(b,MainActivity.sharedpreferences.getString("id",""),item,place.getText().toString(),description.getText().toString(),"",MainActivity.sharedpreferences.getString("hostel",""),getContext());
+             // if(!b.equals(null))Bitmap b= BitmapFactory.decodeResource(getResources(),R.drawable.ic_thumb_up_black_48dp);
+           //   File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+              //  image = (ImageView) v.findViewById(R.id.imageView_nc);
+            //  Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
+            //    Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
+                image = (ImageView) v.findViewById(R.id.imageView_nc);
+                Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
+                Bitmap bit=Bitmap.createScaledBitmap(bitmap,250,250,true);
+            //  if(!rotatedBitmap.equals(null))rotatedBitmap= BitmapFactory.decodeResource(getResources(),R.drawable.ic_thumb_up_black_48dp);
+
+                VolleyClick.newComplaintClick(bit,MainActivity.sharedpreferences.getString("id",""),item,place.getText().toString(),description.getText().toString(),"",MainActivity.sharedpreferences.getString("hostel",""),getContext());
             }
         });
         Button cam_button = (Button)v.findViewById(R.id.button_nc);
@@ -88,7 +101,7 @@ public class new_complaint extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+                File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.png");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 startActivityForResult(intent, CAMERA_PIC_REQUEST);
 
@@ -117,11 +130,28 @@ public class new_complaint extends Fragment {
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_PIC_REQUEST && resultCode == Activity.RESULT_OK) {
-            File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.jpg");
+
+
+            BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+            bmpFactoryOptions.inJustDecodeBounds = false;
+            File file = new File(Environment.getExternalStorageDirectory()+File.separator + "image.png");
+
+            //imageFilePath image path which you pass with intent
+            Bitmap bp = BitmapFactory.decodeFile(file.getAbsolutePath(), bmpFactoryOptions);
+
+            //rotate image by 90 degrees
+           /* Matrix rotateMatrix = new Matrix();
+            rotateMatrix.postRotate(90);
+            rotatedBitmap = Bitmap.createBitmap(bp, 0, 0, bp.getWidth(), bp.getHeight(), rotateMatrix, false);*/
+
+            //add the image to the note through a function call
+           // note.addImage(rotatedBitmap);
+         //   note.saveImageToDevice(rotatedBitmap);
+
             image = (ImageView) v.findViewById(R.id.imageView_nc);
-            Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
-            Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
-            image.setImageBitmap(b2);
+           // Bitmap b= decodeSampledBitmapFromFile(file.getAbsolutePath(), 500, 500);
+          //  Bitmap b2= Bitmap.createScaledBitmap(b,400,400,true);
+            image.setImageBitmap(bp);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

@@ -51,6 +51,7 @@ public class VolleyClick {
             Tools.showAlertDialog("Internet Available", context);
         }
     }
+
     public static void createUserClick(String email,String password,String hostel,String category,String whoCreated,Context context){
         CheckNetwork chkNet = new CheckNetwork(context);
         String URL = "http://192.168.43.196:3000/api/users";

@@ -66,7 +66,7 @@
         android:layout_height="wrap_content"
         android:text="Post"
         android:id="@+id/newcomplaintbutton"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/button_nc"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -75,13 +75,14 @@
         android:layout_height="wrap_content"
         android:text="Capture Image"
         android:id="@+id/button_nc"
-        android:layout_above="@+id/newcomplaintbutton"
+        android:layout_below="@+id/imageView_nc"
         android:layout_centerHorizontal="true" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="130dp"
         android:id="@+id/imageView_nc"
+        android:src="@drawable/ic_menu_camera"
         android:layout_below="@+id/description_suc"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

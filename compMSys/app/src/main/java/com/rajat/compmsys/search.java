@@ -49,10 +49,10 @@ public class search extends Fragment {
                              Bundle savedInstanceState) {
        /* Bundle b=getArguments();
         id=b.getInt("id");*/
-        for(int i=0;i<10;i++){
+      /*  for(int i=0;i<10;i++){
             ComplaintObject yo=new ComplaintObject("papa","arpit","girnar","supp","yo","gsgw","eqgag");
             values.add(yo);
-        }
+        }*/
         View view=inflater.inflate(R.layout.search,container,false);
         search=(EditText)view.findViewById(R.id.search_string);
             Button button=(Button)view.findViewById(R.id.search_butt);
@@ -80,6 +80,7 @@ public class search extends Fragment {
                 // Toast.makeText(parent.getContext(), position, Toast.LENGTH_SHORT).show();
                 //Bundle b=new Bundle();
                 Intent openH = new Intent(getActivity(), vote_dialogbox.class);
+                openH.putExtra("complaint",values.get(position));
                 startActivity(openH);
             }
         });
