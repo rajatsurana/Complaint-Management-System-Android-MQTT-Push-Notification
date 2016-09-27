@@ -1,0 +1,41 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.rajat.compmsys.listview">
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:paddingTop="5dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/sear"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <EditText
+            android:layout_width="match_parent"
+            android:id="@+id/search_string"
+            android:hint="search"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/search_butt"
+        android:background="@drawable/button_shape"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/sear"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/my_recycler_view_1"
+        android:layout_width="match_parent"
+        android:paddingTop="16dp"
+
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:layout_below="@+id/search_butt"/>
+
+</RelativeLayout>

@@ -28,6 +28,11 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.rajat.compmsys.MainActivity;
+import com.rajat.compmsys.Objects.ComplaintObject;
+import com.rajat.compmsys.R;
+import com.rajat.compmsys.db.DatabaseHandler;
+
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -38,7 +43,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import com.rajat.compmsys.R;
+
+import java.util.ArrayList;
+
 public class MQTTService extends Service {
 
     private static final String TAG = "MQTTService";
@@ -46,16 +53,19 @@ public class MQTTService extends Service {
     private static boolean hasMmobile = false;
     private Thread thread;
     private ConnectivityManager mConnMan;
-    private volatile IMqttAsyncClient mqttClient;
-    private String deviceId;
-
-
-
+    public static volatile IMqttAsyncClient mqttClient;
+    private static String deviceId;
+    public static ArrayList<String> str= new ArrayList<String >();
+    //public static ArrayList<Integer> itr =new ArrayList<Integer>();
+    String[] strArr;
+    Integer[] itrArr;
     public class MQTTBinder extends Binder {
         public MQTTService getService(){
             return MQTTService.this;
         }
     }
+
+
 
     @Override
     public void onCreate() {
@@ -65,19 +75,20 @@ public class MQTTService extends Service {
         intentf.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 
         mConnMan = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        registerReceiver(vc, intentf);
+
+        registerReceiver(MyReciever, intentf);
+
 
     }
+    BroadcastReceiver MyReciever = new BroadcastReceiver(){
 
-
-    BroadcastReceiver vc=new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, intent.hasExtra("FAILOVER_CONNECTION") + " 1:2 " + intent.hasExtra(ConnectivityManager.EXTRA_IS_FAILOVER) + " :3: " + intent.hasExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
             boolean failure= intent.getBooleanExtra("FAILOVER_CONNECTION",false);
             boolean noConnect= intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-           Log.v(TAG, failure + " failure : noConnect " + noConnect);
-        NetworkInfo nw = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+            Log.v(TAG, failure + " failure : noConnect " + noConnect);
+            NetworkInfo nw = intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
             Log.v(TAG,nw.getTypeName()+": nw.getTypeName(): isconnected: "+ nw.isConnected());
             Log.v(TAG, "onRecieve()");
             IMqttToken token;
@@ -105,7 +116,10 @@ public class MQTTService extends Service {
             hasConnectivity = hasMmobile || hasWifi;
             Log.v(TAG, "hasConn: " + hasConnectivity + " hasChange: " + hasChanged + " - "+(mqttClient == null || !mqttClient.isConnected()));
             if (!hasConnectivity && !hasChanged && (mqttClient == null || !mqttClient.isConnected())) {//hasConnectivity && hasChanged--as hotspot is used to connect
-                doConnect();
+                for(int d=0;d<str.size();d++){
+                    doConnect(str.get(d));
+                }
+
             } else if (!hasConnectivity && mqttClient != null && mqttClient.isConnected()) {
                 Log.d(TAG, "doDisconnect()");
                 try {
@@ -135,7 +149,7 @@ public class MQTTService extends Service {
         }
     }
 
-    private void doConnect(){
+    private void doConnect(String s){
         Log.d(TAG, "doConnect()");
         IMqttToken token ;//= new MqttDeliveryToken();
         MqttConnectOptions options = new MqttConnectOptions();
@@ -143,13 +157,53 @@ public class MQTTService extends Service {
         options.setKeepAliveInterval(20 * 60);
 
         try {
-            mqttClient = new MqttAsyncClient("tcp://192.168.43.200:1883", deviceId, new MemoryPersistence());
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
             token = mqttClient.connect(options);
             //Log.i("rajat", "subscribe now");
 
             token.waitForCompletion(3500);
             mqttClient.setCallback(new MqttEventCallback());
-            token = mqttClient.subscribe("presence", 1);
+            //for(int i=0;i<str.length;i++){
+            token = mqttClient.subscribe(s,1);
+            token.waitForCompletion(5000);
+            //}
+
+        } catch (MqttSecurityException e) {
+            e.printStackTrace();
+        } catch (MqttException e) {
+            switch (e.getReasonCode()) {
+                case MqttException.REASON_CODE_BROKER_UNAVAILABLE:
+                case MqttException.REASON_CODE_CLIENT_TIMEOUT:
+                case MqttException.REASON_CODE_CONNECTION_LOST:
+                case MqttException.REASON_CODE_SERVER_CONNECT_ERROR:
+                    Log.v(TAG, "c" +e.getMessage());
+                    e.printStackTrace();
+                    break;
+                case MqttException.REASON_CODE_FAILED_AUTHENTICATION:
+                    Intent i = new Intent("RAISEALLARM");
+                    i.putExtra("ALLARM", e);
+                    Log.e(TAG, "b"+ e.getMessage());
+                    break;
+                default:
+                    Log.e(TAG, "a" + e.getMessage());
+            }
+        }
+    }
+    public static void doUnsubscribe(String str){
+        Log.d(TAG, "doConnect()");
+        IMqttToken token ;//= new MqttDeliveryToken();
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setCleanSession(false);
+        options.setKeepAliveInterval(20 * 60);
+
+        try {
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
+            token = mqttClient.connect(options);
+            //Log.i("rajat", "subscribe now");
+
+            token.waitForCompletion(3500);
+            //mqttClient.setCallback(new MqttEventCallback());
+            token = mqttClient.unsubscribe(str);
             token.waitForCompletion(5000);
         } catch (MqttSecurityException e) {
             e.printStackTrace();
@@ -172,10 +226,55 @@ public class MQTTService extends Service {
             }
         }
     }
+    public static void doSubscribe(String str){
+        Log.d(TAG, "doConnect()");
+        IMqttToken token ;//= new MqttDeliveryToken();
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setCleanSession(false);
+        options.setKeepAliveInterval(20 * 60);
 
+        try {
+            mqttClient = new MqttAsyncClient("tcp://192.168.43.196:1883", deviceId, new MemoryPersistence());
+            token = mqttClient.connect(options);
+            //Log.i("rajat", "subscribe now");
+
+            token.waitForCompletion(3500);
+            //mqttClient.setCallback(new MqttEventCallback());
+            token = mqttClient.subscribe(str, 1);
+            token.waitForCompletion(5000);
+        } catch (MqttSecurityException e) {
+            e.printStackTrace();
+        } catch (MqttException e) {
+            switch (e.getReasonCode()) {
+                case MqttException.REASON_CODE_BROKER_UNAVAILABLE:
+                case MqttException.REASON_CODE_CLIENT_TIMEOUT:
+                case MqttException.REASON_CODE_CONNECTION_LOST:
+                case MqttException.REASON_CODE_SERVER_CONNECT_ERROR:
+                    Log.v(TAG, "c" +e.getMessage());
+                    e.printStackTrace();
+                    break;
+                case MqttException.REASON_CODE_FAILED_AUTHENTICATION:
+                    Intent i = new Intent("RAISEALLARM");
+                    i.putExtra("ALLARM", e);
+                    Log.e(TAG, "b"+ e.getMessage());
+                    break;
+                default:
+                    Log.e(TAG, "a" + e.getMessage());
+            }
+        }
+    }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v(TAG, "onStartCommand()");
+        if(!str.contains("Institute")){
+            str.add("Institute");}
+        String hostel=getSharedPreferences("MyPrefs",Context.MODE_PRIVATE).getString("hostel","");
+        if(!str.contains(hostel)) {
+            str.add(hostel);}
+        String id=getSharedPreferences("MyPrefs",Context.MODE_PRIVATE).getString("id","");
+        if(!str.contains(id)){
+            str.add(id);
+        }
         //onNetworkChange();
         return START_STICKY;
     }
@@ -211,8 +310,26 @@ public class MQTTService extends Service {
         		    }*/
                     //startActivity(launchA);
                     String message=new String(msg.getPayload());
+                    Log.i("rajat","message: "+ message);
+                    String[] arr =message.split(":");
+                    Log.i("rajat", "arr.length: " + arr.length);
+                    //solver+":"+user_id+":"+place+":"+description+":"+status+":"+topic+":"+complaint_id
+                    if(arr.length==7){
+                        String solver= arr[0];
+                        String userIds=arr[1];
+                        String place=arr[2];
+                        String description= arr[3];
+                        String status=arr[4];
+                        String topic=arr[5];
+                        String complaint_id=arr[6];
+                        //
+                        ComplaintObject complaintObject=new ComplaintObject(solver,userIds,place,description,status,topic,complaint_id);
+                        //if(!topic.equals("Personal")){
+                        DatabaseHandler databaseH = new DatabaseHandler(MainActivity.context);
+                        databaseH.create(complaintObject);
+                        //}
 
-                    sendNotification("Alert",message,"MQTT",id++);
+                        sendNotification(status,description,place,id++);}
                     Toast.makeText(getApplicationContext(), "MQTT Message:\n" + new String(msg.getPayload()), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -229,10 +346,10 @@ public class MQTTService extends Service {
         return null;
     }
     private void sendNotification(String alert,String message,String title,int id) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        // Intent intent = new Intent(this, MainActivity.class);
+        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        //       PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -240,8 +357,8 @@ public class MQTTService extends Service {
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setSound(defaultSoundUri);
+        //.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

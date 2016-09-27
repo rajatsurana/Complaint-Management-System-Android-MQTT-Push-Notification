@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/my_complaints"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="My complaints" />
+        <item
+            android:id="@+id/notifcation"
+            android:icon="@android:drawable/stat_notify_chat"
+            android:title="Notification" />
+        <item
+            android:id="@+id/search_complaints"
+            android:icon="@android:drawable/ic_menu_search"
+            android:title="Search Complaints" />
+        <item
+            android:id="@+id/subscribe"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="Subscribe" />
+        <item
+            android:id="@+id/all_complaints"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="All complaints"
+            android:visible="false"/>
+        <item
+            android:id="@+id/add_user"
+            android:title="Add User"
+            android:icon="@android:drawable/ic_menu_add"
+            android:visible="false"/>
+        <item
+            android:id="@+id/changepassword"
+            android:title="Change password"
+            />
+        <item
+            android:id="@+id/logout"
+            android:title="Logout"/>
+
+
+    </group>
+
+</menu>
